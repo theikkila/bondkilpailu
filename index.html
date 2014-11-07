@@ -137,8 +137,13 @@ $("#check").click(function(){
 
 function stopBond () {
 	// body...
+	try {
 	document.getElementById("bond").pause();
 	document.getElementById("bond").currentTime = 0;
+		
+	}catch(e) {
+		console.error(e);
+	}
 }
 function explodeWindow () {
 	// body...
