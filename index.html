@@ -134,10 +134,15 @@ $("#check").click(function(){
 	}
 });
 
-function explodeWindow () {
+
+function stopBond () {
 	// body...
 	document.getElementById("bond").pause();
 	document.getElementById("bond").currentTime = 0;
+}
+function explodeWindow () {
+	// body...
+	stopBond();
 	clearInterval(mittari.timer);
 	$("#kysymys").hide();
 	$("#havisit").fadeIn();
@@ -156,7 +161,7 @@ function explodeWindow () {
 
 $("#stop").click(function () {
 	$("#kysymys").hide();
-	document.getElementById("bond").stop();
+	stopBond();
 	clearInterval(mittari.timer);
 });
 </script>
