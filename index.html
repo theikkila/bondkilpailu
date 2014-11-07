@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
+	<style type="text/css">
+	#havisit {
+		background-color: #FF0;
+		text-align: center;
+		position: absolute;
+		top: 50%;
+		height: 300px;
+		margin-top: -150px;
+		width: 400px;
+		left: 50%;
+		margin-left: -200px;
+	}
+	#counter {
+
+		font-size: 7em;
+		text-align: center;
+		line-height: 0em;
+		font-family: courier;
+	}
+	#kysymys {
+		display: block;
+		background-color: #CECECE;
+		padding: 20px;
+		text-align: center;
+	}
+	#answer {
+		width: 100%;
+		height: 40px;
+		font-size: 2em;
+		text-align: center;
+		border-radius: 5px;
+		border: 1px solid #FFF;
+		background-color: #EEE;
+	}
+
+	</style>
+</head>
+<body>
+	<div id="tausta">
+		<h1 id="counter"></h1> <br><small id="elapsed"></small><br><small id="questions"></small>
+		<button id="start">Käynnistä / Nollaa</button>
+		<button id="stop">Pysäytä</button>
+		<div id="kysymys">
+			<h1 id="question"></h1>
+			<input type="text" id="answer" placeholder="Vastaus?">
+			<button id="check">Tarkista!</button>
+		</div>
+		<div id="valmis">
+			<h1>Onneksi olkoon olet 007!</h1>
+		</div>
+		<div id="havisit">
+			<h1>Pommi räjähti ja maailma tuhoutui! :(</h1>
+		</div>
+		
+	</div>
+	<audio id="pommi">
+		<source src="http://happosade.kapsi.fi/asd/awesome_fart_sounds-Twsl_kAt8Zo_fmt43-2313501327.wav" type="audio/wav">
+		</audio>
+		<audio id="bond">
+			<source src="http://happosade.kapsi.fi/asd/james_bond_007_movie_theme_music-Ii1tc493bZM_fmt43.mp3" type="audio/mpeg"></source>
+		</audio>
+	</body>
+	<script type="text/javascript">
+	function padDigits(number, digits) {
+		return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+	}
+	$(document).ready(function () {
+	// body...
+	$("#kysymys").hide();
+	$("#valmis").hide();
+	$("#havisit").hide();
+});
+	var kyssarit = [
+	{question: "Merkittävin auto?", answer: "Aston Martin"},
+	{question: "Minkä logo?", answer: "SPECTRE"},
+	{question: "Kuka pahis?", answer: "Kultasormi"},
+	{question: "Montako Bond-tyttöä?", answer: "50"},
+	{question: "Montako Bond-näyttelijää?", answer: "8"}
+	];
+
+	var mittari = {
+		start: null,
+		end: null,
+		timer: null,
+		poks: null,
+		question: 0
+	};
+	$("#start").click(function () {
+		document.getElementById("bond").play();
+		mittari.question = 0;
+		mittari.start = Date.now();
+		mittari.timer = setInterval(function (){
+			var timeout = mittari.start + 5*60*1000;
+			var time_elapsed = moment.duration(Date.now() - mittari.start);
+			var time_left = moment.duration(timeout - Date.now());
+			if(timeout - Date.now() <= 0) {
+				explodeWindow();
+			}
+			$("#elapsed").text("Aikaa kulunut: " + time_elapsed.asSeconds() + "s");
+			$("#counter").text(padDigits(time_left.minutes(), 2) + ":" + padDigits(time_left.seconds(), 2));
+		}, 100);
+		showQuestion(mittari.question);
+	});
+
+	function showQuestion (question_id) {
+	// body...
+	$("#questions").text("Kysymykset: " + (parseInt(question_id)));
+	if (question_id >= kyssarit.length) {
+		// quiz over
+		clearInterval(mittari.timer);
+		$("#kysymys").hide();
+		$("#valmis").fadeIn();
+		return;
+	};
+	$("#kysymys").show();
+	$("#answer").focus().val("");
+	$("#question").text(kyssarit[question_id].question);
+}
+
+$("#check").click(function(){
+	if (kyssarit[mittari.question].answer.toLowerCase() == $("#answer").val().toLowerCase()) {
+		// oikein
+		showQuestion(++mittari.question);
+	} else {
+		// väärin, räjähtää
+		explodeWindow();
+	}
+});
+
+function explodeWindow () {
+	// body...
+	document.getElementById("bond").pause();
+	document.getElementById("bond").currentTime = 0;
+	clearInterval(mittari.timer);
+	$("#kysymys").hide();
+	$("#havisit").fadeIn();
+	document.getElementById("pommi").play();
+	setTimeout(function() {
+		clearInterval(mittari.poks);
+		$("body").css("background-color", "#FFF");
+		$("#havisit").fadeOut();
+	}, 5000);
+	mittari.poks = setInterval(function () {
+		// body...
+		var color = "rgb("+Math.floor(Math.random()*255)+", 0, 0)";
+		$("body").css("background-color", color);
+	}, 100);
+}
+
+$("#stop").click(function () {
+	$("#kysymys").hide();
+	document.getElementById("bond").stop();
+	clearInterval(mittari.timer);
+});
+</script>
+</html>
